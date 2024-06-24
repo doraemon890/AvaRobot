@@ -1,0 +1,75 @@
+{
+  "name": "ᴀᴠᴀʀᴏʙᴏᴛ",
+  "description": "Telegram Group Management Bot Written In Python Using python-telegram-bot.",
+  "repository": "https://github.com/doraemon890/AvaRobot",
+  "logo": "https://telegra.ph/file/61296490da95c55a1d5ee.jpg",
+  "keywords": [
+    "python3",
+    "telegram",
+    "bot",
+    "AvaRobot",
+    "telegram-bot",
+    "management",
+    "ptb",
+    "pyrogram"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-python"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    }
+  ],
+  "stack": "heroku-22",
+  "addons": [
+    {
+      "options": {
+        "version": "14"
+      },
+      "plan": "heroku-postgresql"
+    }
+  ],
+  "env": {
+    "API_ID": {
+      "description": "ɢᴇᴛ ᴛʜɪs ᴠᴀʟᴜᴇ ғʀᴏᴍ my.telegram.org/apps.",
+      "required": true,
+      "value": ""
+    },
+    "API_HASH": {
+      "description": "ɢᴇᴛ ᴛʜɪs ᴠᴀʟᴜᴇ ғʀᴏᴍ my.telegram.org/apps.",
+      "required": true,
+      "value": ""
+    },
+    "OWNER_ID": {
+      "description": "ʏᴏᴜʀ ᴜsᴇʀ ID ᴀs ᴀɴ ɪɴᴛᴇɢᴇʀ.",
+      "required": true,
+      "value": "7044783841"
+    },
+    "DEV_USERS": {
+      "description": "ᴅᴇᴠs ᴜsᴇʀ ID ᴀs ᴀɴ ɪɴᴛᴇɢᴇʀ.",
+      "required": true,
+      "value": "7044783841"
+    },
+    "OWNER_USERNAME": {
+      "description": "ʏᴏᴜʀ ᴛɢ ᴜsᴇʀɴᴀᴍᴇ",
+      "required": true,
+      "value": "JARVIS_V2"
+    },
+    "LOGGER_ID": {
+      "description": "ᴇᴠᴇɴᴛ ʟᴏɢs ᴄʜᴀɴɴᴇʟ  ᴛᴏ ɴᴏᴛᴇ ᴅᴏᴡɴ ɪᴍᴘᴏʀᴛᴀɴᴛ ʙᴏᴛ ʟᴇᴠᴇʟ ᴇᴠᴇɴᴛs, ᴇx: '-10023456'",
+      "required": true,
+      "value": ""
+    },
+    "MONGO_DB_URI": {
+      "description": "ʀᴇǫᴜɪʀᴇᴅ ғᴏʀ ᴅᴀᴛᴀʙᴀsᴇ ᴄᴏɴɴᴇᴄᴛɪᴏɴs (ᴍᴏɴɢᴏ).",
+      "required": true,
+      "value": ""
+    },
+    "TOKEN": {
+      "description": "Get bot token from @BotFather on TG",
+      "required": true,
+      "value": ""
+    }
+  }
+}
