@@ -568,8 +568,6 @@ def snipe(update: Update, context: CallbackContext):
             )
 
 
-__mod_name__ = "𝐁ᴀɴs"
-
 
 BAN_HANDLER = CommandHandler(["ban", "sban", "dban"], ban, run_async=True)
 TEMPBAN_HANDLER = CommandHandler(["tban"], temp_ban, run_async=True)
@@ -608,3 +606,11 @@ __handlers__ = [
     SNIPE_HANDLER,
     BANME_HANDLER,
 ]
+
+__mod_name__ = "𝐁ᴀɴs"
+
+from Ava.modules.language import gs
+
+
+def get_help(chat):
+    return gs(chat, "bans_help")
