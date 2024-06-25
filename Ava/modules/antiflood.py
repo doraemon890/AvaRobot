@@ -301,17 +301,13 @@ def __chat_settings__(chat_id, user_id):
 
 __mod_name__ = "𝐀-ғʟᴏᴏᴅ"
 
-# ғᴏʀ ʜᴇʟᴘ ᴍᴇɴᴜ
 
-# """
 from Ava.modules.language import gs
 
 
 def get_help(chat):
     return gs(chat, "antiflood_help")
 
-
-# """
 
 
 FLOOD_BAN_HANDLER = MessageHandler(
