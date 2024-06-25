@@ -1274,8 +1274,8 @@ def get_help(chat):
     return [
         gs(chat, "greetings_help"),
         [
-            InlineKeyboardButton(text="ᴡᴇʟᴄᴏᴍᴇᴇ ᴍᴜᴛᴇꜱ", callback_data="wlc_help_m"),
-            InlineKeyboardButton(text="ᴡᴇʟᴄᴏᴍᴇ ꜰᴏʀᴍᴀᴛᴛɪɴɢ", callback_data="wlc_help_h"),
+            InlineKeyboardButton(text="ᴡᴇʟᴄᴏᴍᴇᴇ ᴍᴜᴛᴇꜱ", callback_data="welcome_mutes"),
+            InlineKeyboardButton(text="ᴡᴇʟᴄᴏᴍᴇ ꜰᴏʀᴍᴀᴛᴛɪɴɢ", callback_data="welcome_help"),
         ],
     ]
 

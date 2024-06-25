@@ -127,10 +127,3 @@ dispatcher.add_handler(PINGALL_HANDLER)
 __command_list__ = ["ping", "pingall"]
 __handlers__ = [PING_HANDLER, PINGALL_HANDLER]
 
-
-__mod_name__ = "𝐏ɪɴɢ"
-
-from Ava.modules.language import gs
-
-def get_help(chat):
-    return gs(chat, "ping_help")

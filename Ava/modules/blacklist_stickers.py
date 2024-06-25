@@ -441,7 +441,6 @@ def __stats__():
     return f"⍟ {sql.num_stickers_filters()} ʙʟᴀᴄᴋʟɪsᴛ sᴛɪᴄᴋᴇʀs, ᴀᴄʀᴏss {sql.num_stickers_filter_chats()} ᴄʜᴀᴛs."
 
 
-__mod_name__ = "𝐒-ʙʟɪsᴛ"
 
 BLACKLIST_STICKER_HANDLER = DisableAbleCommandHandler(
     "blsticker",

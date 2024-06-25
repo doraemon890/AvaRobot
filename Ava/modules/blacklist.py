@@ -502,10 +502,10 @@ def get_help(chat):
         gs(chat, "blacklist_help_bse"),
         [
             InlineKeyboardButton(
-                text="ʙʟᴀᴄᴋʟɪsᴛ 👽", callback_data="asusau_help_wblack"
+                text="ʙʟᴀᴄᴋʟɪsᴛ 👽", callback_data="blacklist_help"
             ),
             InlineKeyboardButton(
-                text="ʙ-sᴛɪᴄᴋᴇʀ 🦍", callback_data="asusau_help_sblack"
+                text="ʙ-sᴛɪᴄᴋᴇʀ 🦍", callback_data="sticker_blacklist_help"
             ),
         ],
     ]
