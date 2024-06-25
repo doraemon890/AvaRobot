@@ -298,18 +298,6 @@ def __chat_settings__(chat_id, user_id):
         return "ɴᴏᴛ ᴇɴғᴏʀᴄɪɴɢ ᴛᴏ ғʟᴏᴏᴅ ᴄᴏɴᴛʀᴏʟ."
     return f"ᴀɴᴛɪғʟᴏᴏᴅ ʜᴀs ʙᴇᴇɴ sᴇᴛ ᴛᴏ`{limit}`."
 
-
-__mod_name__ = "𝐀-ғʟᴏᴏᴅ"
-
-
-from Ava.modules.language import gs
-
-
-def get_help(chat):
-    return gs(chat, "antiflood_help")
-
-
-
 FLOOD_BAN_HANDLER = MessageHandler(
     Filters.all & ~Filters.status_update & Filters.chat_type.groups,
     check_flood,
@@ -329,3 +317,13 @@ dispatcher.add_handler(FLOOD_BAN_HANDLER, FLOOD_GROUP)
 dispatcher.add_handler(SET_FLOOD_HANDLER)
 dispatcher.add_handler(SET_FLOOD_MODE_HANDLER)
 dispatcher.add_handler(FLOOD_HANDLER)
+
+
+__mod_name__ = "𝐀-ғʟᴏᴏᴅ"
+
+
+from Ava.modules.language import gs
+
+
+def get_help(chat):
+    return gs(chat, "antiflood_help")
