@@ -1235,40 +1235,47 @@ def wlc_m_help(update: Update, context: CallbackContext):
         parse_mode=ParseMode.HTML,
     )
 
-
 def wlc_fill_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "welcome_help"),
         parse_mode=ParseMode.HTML,
     )
 
-
 @Avacallback(pattern=r"wlc_help_")
 def fmt_help(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
     help_info = query.data.split("wlc_help_")[1]
+
+    if query.message is None:
+        print("No message to edit.")
+        return
+
     if help_info == "m":
         help_text = gs(update.effective_chat.id, "welcome_mutes")
     elif help_info == "h":
-        help_text = gs(
-            update.effective_chat.id, "welcome_help"
-        )  # .format(escape_markdown(dispatcher.bot.username)))
-    query.message.edit_text(
-        text=help_text,
-        parse_mode=ParseMode.HTML,
-        reply_markup=InlineKeyboardMarkup(
-            [
+        help_text = gs(update.effective_chat.id, "welcome_help")
+    else:
+        help_text = "Unknown help info."
+
+    try:
+        query.message.edit_text(
+            text=help_text,
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton(
-                        text="ʙᴀᴄᴋ",
-                        callback_data=f"help_module({__mod_name__.lower()})",
-                    )
+                    [
+                        InlineKeyboardButton(
+                            text="ʙᴀᴄᴋ",
+                            callback_data=f"help_module({__mod_name__.lower()})",
+                        )
+                    ]
                 ]
-            ]
-        ),
-    )
-    bot.answer_callback_query(query.id)
+            ),
+        )
+        bot.answer_callback_query(query.id)
+    except BadRequest as e:
+        print(f"Failed to edit message: {e}")
 
 def get_help(chat):
     return [
