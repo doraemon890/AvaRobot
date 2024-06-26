@@ -2141,6 +2141,9 @@ def fed_help(update: Update, context: CallbackContext):
     else:
         help_text = "Unknown help info."
 
+    # Log the help_text to check its content
+    print(f"Help text: {help_text}")
+
     try:
         query.message.edit_text(
             text=help_text,
@@ -2169,6 +2172,7 @@ def get_help(chat):
         ],
         [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_helpy_user")],
     ]
+
 
 
 
