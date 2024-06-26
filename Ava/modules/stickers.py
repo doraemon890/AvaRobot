@@ -820,13 +820,13 @@ async def handler(event):
     reply_message = await event.get_reply_message()
 
     if not reply_message.media:
-        await event.reply("```ʀᴇᴘʟʏ ᴛᴏ ᴀ ɪᴍᴀɢᴇ/sᴛɪᴄᴋᴇʀ.```")
+        await event.reply("`ʀᴇᴘʟʏ ᴛᴏ ᴀ ɪᴍᴀɢᴇ/sᴛɪᴄᴋᴇʀ.`")
 
         return
 
     file = await bot.download_media(reply_message)
 
-    msg = await event.reply("```ᴍᴇᴍɪғʏɪɴɢ ᴛʜɪs ɪᴍᴀɢᴇ! 😉 ```")
+    msg = await event.reply("👻")
 
     if "doraemon890" not in Credit:
         await event.reply("ᴛʜɪs ɴɪɢɢᴀ ʀᴇᴍᴏᴠᴇᴅ ᴄʀᴇᴅɪᴛ ʟɪɴᴇ ғʀᴏᴍ ᴄᴏᴅᴇ 😶")
