@@ -854,7 +854,7 @@ async def drawText(image_path, text):
 
     fnt = "ariel.ttf" if os.name == "nt" else "./Ava/modules/resources/asu.ttf"
     m_font = ImageFont.truetype(fnt, int((70 / 640) * i_width))
-
+    
     if ";" in text:
         upper_text, lower_text = text.split(";")
 
@@ -869,7 +869,8 @@ async def drawText(image_path, text):
 
     if upper_text:
         for u_text in textwrap.wrap(upper_text, width=15):
-            u_width, u_height = draw.textsize(u_text, font=m_font)
+            uwl, uht, uwr, uhb = m_font.getbbox(u_text)
+            u_width, u_height = uwr - uwl, uhb - uht
 
             draw.text(
                 xy=(((i_width - u_width) / 2) - 2, int((current_h / 640) * i_width)),
@@ -910,7 +911,8 @@ async def drawText(image_path, text):
 
     if lower_text:
         for l_text in textwrap.wrap(lower_text, width=15):
-            u_width, u_height = draw.textsize(l_text, font=m_font)
+            uwl, uht, uwr, uhb = m_font.getbbox(l_text)
+            u_width, u_height = uwr - uwl, uhb - uht
 
             draw.text(
                 xy=(
