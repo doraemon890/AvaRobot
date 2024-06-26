@@ -240,16 +240,16 @@ fed_owner_help: |
    
 fed_admin_help: |
   *ғᴇᴅ ᴀᴅᴍɪɴs:*
-  • `/fban <user> <reason>`*:* Fed bans a user
-  • `/unfban <user> <reason>`*:* Removes a user from a fed ban
-  • `/fedinfo <fed_id>`*:* Information about the specified Federation
-  • `/joinfed <fed_id>`*:* Join the current chat to the Federation. Only chat owners can do this. Every chat can only be in one Federation
-  • `/leavefed <fed_id>`*:* Leave the Federation given. Only chat owners can do this
-  • `/setfrules <rules>`*:* Arrange Federation rules
-  • `/fedadmins`*:* Show Federation admin
-  • `/fbanlist`*:* Displays all users who are victimized at the Federation at this time
-  • `/fedchats`*:* Get all the chats that are connected in the Federation
-  • `/chatfed `*:* See the Federation in the current chat
+  •➥ /fban <user> <reason> *:* Fᴇᴅ ʙᴀɴ ᴀ ᴜsᴇʀ
+  •➥ /unfban <user> <reason> *:* Rᴇᴍᴏᴠᴇs ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴀ ғᴇᴅ ʙᴀɴ
+  •➥ /fedinfo <fed_id> *:* Iɴғᴏʀᴍᴀᴛɪᴏɴ ᴀʙᴏᴜᴛ ᴛʜᴇ sᴘᴇᴄɪғɪᴇᴅ Fᴇᴅᴇʀᴀᴛɪᴏɴ
+  •➥ /joinfed <fed_id> *:* Jᴏɪɴ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ᴄʜᴀᴛ ᴛᴏ ᴛʜᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ. Oɴʟʏ ᴄʜᴀᴛ ᴏᴡɴᴇʀs ᴄᴀɴ ᴅᴏ ᴛʜɪs. Eᴠᴇʀʏ ᴄʜᴀᴛ ᴄᴀɴ ᴏɴʟʏ ʙᴇ ɪɴ ᴏɴᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ
+  •➥ /leavefed <fed_id> *:* Lᴇᴀᴠᴇ ᴛʜᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ ɢɪᴠᴇɴ, Oɴʟʏ ᴄʜᴀᴛ ᴏᴡɴᴇʀs ᴄᴀɴ ᴅᴏ ᴛʜɪs
+  •➥ /setfrules <rules> *:* Aʀʀᴀɴɢᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ ʀᴜʟᴇs
+  •➥ /fedadmins *:* Sʜᴏᴡ Fᴇᴅᴇʀᴀᴛɪᴏɴ ᴀᴅᴍɪɴ
+  •➥ /fbanlist *:* Dɪsᴘʟᴀʏs ᴀʟʟ ᴜsᴇʀs ᴡʜᴏ ᴀʀᴇ ᴠɪᴄᴛɪᴍɪᴢᴇᴅ ᴀᴛ ᴛʜᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ ᴀᴛ ᴛʜɪs ᴛɪᴍᴇ
+  •➥ /fedchats *:* Gᴇᴛ ᴀʟʟ ᴛʜᴇ ᴄʜᴀᴛs ᴛʜᴀᴛ ᴀʀᴇ ᴄᴏɴɴᴇᴄᴛᴇᴅ ɪɴ ᴛʜᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ
+  •➥ /chatfed *:* Sᴇᴇ ᴛʜᴇ Fᴇᴅᴇʀᴀᴛɪᴏɴ ɪɴ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ᴄʜᴀᴛ
 
 
 fed_user_help: | 
