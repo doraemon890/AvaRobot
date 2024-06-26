@@ -1258,6 +1258,9 @@ def fmt_help(update: Update, context: CallbackContext):
     else:
         help_text = "Unknown help info."
 
+    # Log the help_text to check its content
+    print(f"Help text: {help_text}")
+
     try:
         query.message.edit_text(
             text=help_text,
