@@ -24,6 +24,7 @@ def paginate(iterable: Iterable, page_size: int) -> Generator[List, None, None]:
 
 def gs(chat_id: Union[int, str], string: str) -> str:
     try:
+        chat_id = str(chat_id)  # Ensure chat_id is a string
         lang = sql.get_chat_lang(chat_id)
         return get_string(lang, string)
     except Exception:
@@ -36,8 +37,10 @@ def set_lang(update: Update, _) -> None:
     chat = update.effective_chat
     msg = update.effective_message
 
-    msg_text = gs(chat.id, "curr_chat_lang").format(
-        get_language(sql.get_chat_lang(chat.id))[:-3]
+    chat_id_str = str(chat.id)  # Ensure chat.id is treated as a string
+
+    msg_text = gs(chat_id_str, "curr_chat_lang").format(
+        get_language(sql.get_chat_lang(chat_id_str))[:-3]
     )
 
     keyb = [
@@ -59,8 +62,9 @@ def lang_button(update: Update, _) -> None:
 
     query.answer()
     lang = query.data.split("_")[1]
-    sql.set_lang(chat.id, lang)
+    chat_id_str = str(chat.id)  # Ensure chat.id is treated as a string
+    sql.set_lang(chat_id_str, lang)
 
     query.message.edit_text(
-        gs(chat.id, "set_chat_lang").format(get_language(lang)[:-3])
+        gs(chat_id_str, "set_chat_lang").format(get_language(lang)[:-3])
     )
