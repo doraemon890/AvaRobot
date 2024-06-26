@@ -484,10 +484,10 @@ def get_help(chat):
         gs(chat, "blacklist_help_bse"),
         [
             InlineKeyboardButton(
-                text="ʙʟᴀᴄᴋʟɪsᴛ 👽", callback_data="blacklist_help"
+                text="ʙʟᴀᴄᴋʟɪsᴛ 👽", callback_data="asusau_help_wblack"
             ),
             InlineKeyboardButton(
-                text="ʙ-sᴛɪᴄᴋᴇʀ 🦍", callback_data="sticker_blacklist_help"
+                text="ʙ-sᴛɪᴄᴋᴇʀ 🦍", callback_data="asusau_help_sblack"
             ),
         ],
     ]
