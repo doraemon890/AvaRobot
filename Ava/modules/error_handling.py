@@ -71,27 +71,33 @@ def error_callback(update: Update, context: CallbackContext):
             response = requests.post(
                 url, data={"content": pretty_message, "extension": extension}
             )
-        except Exception as e:
-            return {"error": str(e)}
-        response = response.json()
-        e = html.escape(f"{context.error}")
-        if not response:
+            response_text = response.text
+            response_json = response.json() if response_text else None
+        except requests.exceptions.RequestException as e:
+            context.bot.send_message(
+                ERROR_LOGS,
+                text=f"An error occurred while sending the error log: {e}",
+                parse_mode=ParseMode.HTML,
+            )
+            return
+
+        if not response_json:
             with open("error.txt", "w+") as f:
                 f.write(pretty_message)
             context.bot.send_document(
                 ERROR_LOGS,
                 open("error.txt", "rb"),
                 caption=f"#{context.error.identifier}\n<b>ʏᴏᴜʀ ᴄᴜᴛᴇ ᴀᴠᴀ ʜᴀᴠᴇ ᴀɴ ᴇʀʀᴏʀ ғᴏʀ ʏᴏᴜ:"
-                f"</b>\n<code>{e}</code>",
+                f"</b>\n<code>{html.escape(str(context.error))}</code>",
                 parse_mode="html",
             )
             return
 
-        url = f"https://spaceb.in/{response['payload']['id']}"
+        url = f"https://spaceb.in/{response_json['payload']['id']}"
         context.bot.send_message(
             ERROR_LOGS,
             text=f"#{context.error.identifier}\n<b>Your Cute Ava uvstats Have An Error For You:"
-            f"</b>\n<code>{e}</code>",
+            f"</b>\n<code>{html.escape(str(context.error))}</code>",
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("sᴇxʏ ᴀᴠᴀ ᴇʀʀᴏʀ ʟᴏɢs", url=url)]],
             ),
@@ -114,7 +120,7 @@ def list_errors(update: Update, context: CallbackContext):
         context.bot.send_document(
             update.effective_chat.id,
             open("errors_msg.txt", "rb"),
-            caption="Too many errors have occured..",
+            caption="Too many errors have occurred..",
             parse_mode="html",
         )
         return
