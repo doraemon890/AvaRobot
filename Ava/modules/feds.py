@@ -2137,6 +2137,9 @@ def fed_help(update: Update, context: CallbackContext):
     else:
         help_text = "Help text not found."
 
+    # Log the help_text to check its content
+    print(f"Help text: {help_text}")
+
     if query.message and query.message.text:
         try:
             query.message.edit_text(
@@ -2155,10 +2158,15 @@ def fed_help(update: Update, context: CallbackContext):
             )
             bot.answer_callback_query(query.id)
         except BadRequest as e:
+            print(f"Failed to edit message: {e}")
             context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
     else:
-        context.bot.send_message(chat_id=query.from_user.id, text=help_text, parse_mode=ParseMode.MARKDOWN)
-        bot.answer_callback_query(query.id)
+        try:
+            context.bot.send_message(chat_id=query.from_user.id, text=help_text, parse_mode=ParseMode.MARKDOWN)
+            bot.answer_callback_query(query.id)
+        except BadRequest as e:
+            print(f"Failed to send message: {e}")
+            context.bot.send_message(chat_id=query.message.chat_id, text="Failed to send message: " + str(e))
 
 def get_help(chat):
     return [
