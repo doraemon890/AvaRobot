@@ -464,7 +464,9 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
         help_text = gs(update.effective_chat.id, "blacklist_help")
     elif help_info == "sblack":
         help_text = gs(update.effective_chat.id, "sticker_blacklist_help")
-    
+    else:
+        help_text = "Help text not found."
+
     if query.message:
         try:
             query.message.edit_text(
@@ -483,6 +485,9 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
             )
             bot.answer_callback_query(query.id)
         except BadRequest as e:
+            # Log the error and message details for debugging
+            print(f"Failed to edit message: {str(e)}")
+            print(f"Message content: {query.message.text}")
             context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
     else:
         context.bot.send_message(chat_id=query.from_user.id, text="No message to edit.")
