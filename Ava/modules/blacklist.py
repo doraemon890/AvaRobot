@@ -441,43 +441,40 @@ __handlers__ = [
 from Ava.modules.language import gs
 
 def blacklist_help(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        gs(update.effective_chat.id, "blacklist_help"),
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
-def sticker_blacklist_help(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        gs(update.effective_chat.id, "sticker_blacklist_help"),
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
-@akboss(pattern=r"asusau_help_")
-def blacklist_help_bse(update: Update, context: CallbackContext):
     query = update.callback_query
-    bot = context.bot
-    help_info = query.data.split("asusau_help_")[1]
-    if help_info == "wblack":
-        help_text = gs(update.effective_chat.id, "blacklist_help")
-    elif help_info == "sblack":
-        help_text = gs(update.effective_chat.id, "sticker_blacklist_help")
-    query.message.edit_text(
-        text=help_text,
+    query.edit_message_text(
+        gs(update.effective_chat.id, "blacklist_help"),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
                         text="ʙᴀᴄᴋ",
-                        callback_data=f"help_module({__mod_name__.lower()})",
+                        callback_data="help_module_b_list"
                     )
                 ]
             ]
         ),
     )
-    bot.answer_callback_query(query.id)
+    query.answer()
 
-__mod_name__ = "𝐁-ʟɪsᴛ️"
+def sticker_blacklist_help(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.edit_message_text(
+        gs(update.effective_chat.id, "sticker_blacklist_help"),
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="ʙᴀᴄᴋ",
+                        callback_data="help_module_b_list"
+                    )
+                ]
+            ]
+        ),
+    )
+    query.answer()
 
 def get_help(chat):
     return [
