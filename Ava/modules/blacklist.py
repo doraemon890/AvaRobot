@@ -441,40 +441,43 @@ __handlers__ = [
 from Ava.modules.language import gs
 
 def blacklist_help(update: Update, context: CallbackContext):
-    query = update.callback_query
-    query.edit_message_text(
+    update.effective_message.reply_text(
         gs(update.effective_chat.id, "blacklist_help"),
         parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="ʙᴀᴄᴋ",
-                        callback_data="help_module_b_list"
-                    )
-                ]
-            ]
-        ),
     )
-    query.answer()
 
 def sticker_blacklist_help(update: Update, context: CallbackContext):
-    query = update.callback_query
-    query.edit_message_text(
+    update.effective_message.reply_text(
         gs(update.effective_chat.id, "sticker_blacklist_help"),
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+@akboss(pattern=r"asusau_help_")
+def blacklist_help_bse(update: Update, context: CallbackContext):
+    query = update.callback_query
+    bot = context.bot
+    help_info = query.data.split("asusau_help_")[1]
+    if help_info == "wblack":
+        help_text = gs(update.effective_chat.id, "blacklist_help")
+    elif help_info == "sblack":
+        help_text = gs(update.effective_chat.id, "sticker_blacklist_help")
+    query.message.edit_text(
+        text=help_text,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
                         text="ʙᴀᴄᴋ",
-                        callback_data="help_module_b_list"
+                        callback_data=f"help_module({__mod_name__.lower()})",
                     )
                 ]
             ]
         ),
     )
-    query.answer()
+    bot.answer_callback_query(query.id)
+
+__mod_name__ = "𝐁-ʟɪsᴛ️"
 
 def get_help(chat):
     return [
@@ -488,10 +491,3 @@ def get_help(chat):
             ),
         ],
     ]
-
-# Adding CallbackQueryHandlers
-CALLBACK_HANDLER_BLACKLIST = CallbackQueryHandler(blacklist_help, pattern=r"blacklist_help")
-CALLBACK_HANDLER_STICKER_BLACKLIST = CallbackQueryHandler(sticker_blacklist_help, pattern=r"sticker_blacklist_help")
-
-dispatcher.add_handler(CALLBACK_HANDLER_BLACKLIST)
-dispatcher.add_handler(CALLBACK_HANDLER_STICKER_BLACKLIST)
