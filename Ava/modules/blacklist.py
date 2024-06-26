@@ -9,7 +9,7 @@ from telegram import (
     Update,
 )
 from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
 
 import Ava.modules.sql.blacklist_sql as sql
@@ -27,7 +27,6 @@ from Ava.modules.sql.approve_sql import is_approved
 from Ava.modules.warns import warn
 
 BLACKLIST_GROUP = 11
-
 
 @user_admin
 @typing_action
@@ -69,7 +68,6 @@ def blacklist(update, context):
             )
             return
         send_message(update.effective_message, text, parse_mode=ParseMode.HTML)
-
 
 @user_admin
 @typing_action
@@ -115,7 +113,6 @@ def add_blacklist(update, context):
             update.effective_message,
             "ᴛᴇʟʟ ᴍᴇ ᴡʜɪᴄʜ ᴡᴏʀᴅs ʏᴏᴜ ᴡᴏᴜʟᴅ ʟɪᴋᴇ ᴛᴏ ᴀᴅᴅ ɪɴ ʙʟᴀᴄᴋʟɪsᴛ.",
         )
-
 
 @user_admin
 @typing_action
@@ -184,7 +181,6 @@ def unblacklist(update, context):
             update.effective_message,
             "ᴛᴇʟʟ ᴍᴇ ᴡʜɪᴄʜ ᴡᴏʀᴅs ʏᴏᴜ ᴡᴏᴜʟᴅ ʟɪᴋᴇ ᴛᴏ ʀᴇᴍᴏᴠᴇ ғʀᴏᴍ ʙʟᴀᴄᴋʟɪsᴛ!",
         )
-
 
 @loggable
 @user_admin
@@ -294,13 +290,11 @@ def blacklist_mode(update, context):
     send_message(update.effective_message, text, parse_mode=ParseMode.MARKDOWN)
     return ""
 
-
 def findall(p, s):
     i = s.find(p)
     while i != -1:
         yield i
         i = s.find(p, i + 1)
-
 
 @user_not_admin
 def del_blacklist(update, context):
@@ -393,31 +387,25 @@ def del_blacklist(update, context):
                     LOGGER.exception("ᴇʀʀᴏʀ ᴡʜɪʟᴇ ᴅᴇʟᴇᴛɪɴɢ ʙʟᴀᴄᴋʟɪsᴛ ᴍᴇssᴀɢᴇ.")
             break
 
-
 def __import_data__(chat_id, data):
     # set chat blacklist
     blacklist = data.get("blacklist", {})
     for trigger in blacklist:
         sql.add_to_blacklist(chat_id, trigger)
 
-
 def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
-
 
 def __chat_settings__(chat_id, user_id):
     blacklisted = sql.num_blacklist_chat_filters(chat_id)
     return f"ᴛʜᴇʀᴇ ᴀʀᴇ {blacklisted} ʙʟᴀᴄᴋʟɪsᴛᴇᴅ ᴡᴏʀᴅs."
 
-
 def __stats__():
     return f"≛≛  {sql.num_blacklist_filters()} ʙʟᴀᴄᴋʟɪsᴛ ᴛʀɪɢɢᴇʀs, ᴀᴄʀᴏss {sql.num_blacklist_filter_chats()} ᴄʜᴀᴛs."
-
 
 BLACKLIST_HANDLER = DisableAbleCommandHandler(
     ["blacklist", "blocklist"], blacklist, pass_args=True, admin_ok=True, run_async=True
 )
-
 
 ADD_BLACKLIST_HANDLER = CommandHandler(
     ["addblacklist", "addblocklist"], add_blacklist, run_async=True
@@ -450,9 +438,7 @@ __handlers__ = [
     (BLACKLIST_DEL_HANDLER, BLACKLIST_GROUP),
 ]
 
-
 from Ava.modules.language import gs
-
 
 def blacklist_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
@@ -460,13 +446,11 @@ def blacklist_help(update: Update, context: CallbackContext):
         parse_mode=ParseMode.MARKDOWN,
     )
 
-
 def sticker_blacklist_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "sticker_blacklist_help"),
         parse_mode=ParseMode.MARKDOWN,
     )
-
 
 @akboss(pattern=r"asusau_help_")
 def blacklist_help_bse(update: Update, context: CallbackContext):
@@ -493,9 +477,7 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
     )
     bot.answer_callback_query(query.id)
 
-
 __mod_name__ = "𝐁-ʟɪsᴛ️"
-
 
 def get_help(chat):
     return [
@@ -510,3 +492,9 @@ def get_help(chat):
         ],
     ]
 
+# Adding CallbackQueryHandlers
+CALLBACK_HANDLER_BLACKLIST = CallbackQueryHandler(blacklist_help, pattern=r"blacklist_help")
+CALLBACK_HANDLER_STICKER_BLACKLIST = CallbackQueryHandler(sticker_blacklist_help, pattern=r"sticker_blacklist_help")
+
+dispatcher.add_handler(CALLBACK_HANDLER_BLACKLIST)
+dispatcher.add_handler(CALLBACK_HANDLER_STICKER_BLACKLIST)
