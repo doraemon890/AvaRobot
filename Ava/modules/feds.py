@@ -2160,10 +2160,10 @@ def get_help(chat):
     return [
         gs(chat, "feds_help"),
         [
-            InlineKeyboardButton(text="ғᴇᴅᴀᴅᴍɪɴ", callback_data="FED_ADMIN_HELP"),
-            InlineKeyboardButton(text="ғᴇᴅᴏᴡɴᴇʀ", callback_data="FED_OWNER_HELP"),
+            InlineKeyboardButton(text="ғᴇᴅᴀᴅᴍɪɴ", callback_data="fed_admin_help"),
+            InlineKeyboardButton(text="ғᴇᴅᴏᴡɴᴇʀ", callback_data="fed_owner_help"),
         ],
-        [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="FED_USER_HELP")],
+        [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_user_help")],
     ]
 
 
