@@ -2056,51 +2056,6 @@ def get_chat(chat_id, chat_data):
         return {"status": False, "value": False}
 
 
-def fed_owner_help(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        """*👑 Fed Owner Only:*
- ❂ `/newfed <fed_name>`*:* Creates a Federation, One allowed per user
- ❂ `/renamefed <fed_id> <new_fed_name>`*:* Renames the fed id to a new name
- ❂ `/delfed <fed_id>`*:* Delete a Federation, and any information related to it. Will not cancel blocked users
- ❂ `/fpromote <user>`*:* Assigns the user as a federation admin. Enables all commands for the user under `Fed Admins`
- ❂ `/fdemote <user>`*:* Drops the User from the admin Federation to a normal User
- ❂ `/subfed <fed_id>`*:* Subscribes to a given fed ID, bans from that subscribed fed will also happen in your fed
- ❂ `/unsubfed <fed_id>`*:* Unsubscribes to a given fed ID
- ❂ `/setfedlog <fed_id>`*:* Sets the group as a fed log report base for the federation
- ❂ `/unsetfedlog <fed_id>`*:* Removed the group as a fed log report base for the federation
- ❂ `/fbroadcast <message>`*:* Broadcasts a messages to all groups that have joined your fed
- ❂ `/fedsubs`*:* Shows the feds your group is subscribed to `(broken rn)`""",
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
-
-def fed_admin_help(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        """*🔱 Fed Admins:*
- ❂ `/fban <user> <reason>`*:* Fed bans a user
- ❂ `/unfban <user> <reason>`*:* Removes a user from a fed ban
- ❂ `/fedinfo <fed_id>`*:* Information about the specified Federation
- ❂ `/joinfed <fed_id>`*:* Join the current chat to the Federation. Only chat owners can do this. Every chat can only be in one Federation
- ❂ `/leavefed <fed_id>`*:* Leave the Federation given. Only chat owners can do this
- ❂ `/setfrules <rules>`*:* Arrange Federation rules
- ❂ `/fedadmins`*:* Show Federation admin
- ❂ `/fbanlist`*:* Displays all users who are victimized at the Federation at this time
- ❂ `/fedchats`*:* Get all the chats that are connected in the Federation
- ❂ `/chatfed `*:* See the Federation in the current chat\n""",
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
-
-def fed_user_help(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        """*🎩 Any user:*
-
-❂ /fbanstat*:* Shows if you/or the user you are replying to or their username is fbanned somewhere or not
-❂ /fednotif <on/off>*:* Federation settings not in PM when there are users who are fbaned/unfbanned
-❂ /frules*:* See Federation regulations\n""",
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
 
 __mod_name__ = "𝐅ᴇᴅs "
 
@@ -2109,36 +2064,33 @@ from Ava.modules.language import gs
 
 def fed_owner_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
-        gs(update.effective_chat.id, "FED_OWNER_HELP"),
+        gs(update.effective_chat.id, "fed_owner_help"),
         parse_mode=ParseMode.MARKDOWN,
     )
-
 
 def fed_admin_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
-        gs(update.effective_chat.id, "FED_ADMIN_HELP"),
+        gs(update.effective_chat.id, "fed_admin_help"),
         parse_mode=ParseMode.MARKDOWN,
     )
-
 
 def fed_user_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
-        gs(update.effective_chat.id, "FED_USER_HELP"),
+        gs(update.effective_chat.id, "fed_user_help"),
         parse_mode=ParseMode.MARKDOWN,
     )
 
-
-@Avacallback(pattern=r"fed_help_")
+@Avacallback(pattern=r"fed_helpy_")
 def fed_help(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
-    help_info = query.data.split("fed_help_")[1]
+    help_info = query.data.split("fed_helpy_")[1]
     if help_info == "owner":
-        help_text = gs(update.effective_chat.id, "FED_OWNER_HELP")
+        help_text = gs(update.effective_chat.id, "fed_owner_help")
     elif help_info == "admin":
-        help_text = gs(update.effective_chat.id, "FED_ADMIN_HELP")
+        help_text = gs(update.effective_chat.id, "fed_admin_help")
     elif help_info == "user":
-        help_text = gs(update.effective_chat.id, "FED_USER_HELP")
+        help_text = gs(update.effective_chat.id, "fed_user_help")
     query.message.edit_text(
         text=help_text,
         parse_mode=ParseMode.MARKDOWN,
@@ -2155,15 +2107,14 @@ def fed_help(update: Update, context: CallbackContext):
     )
     bot.answer_callback_query(query.id)
 
-
 def get_help(chat):
     return [
         gs(chat, "feds_help"),
         [
-            InlineKeyboardButton(text="ғᴇᴅᴀᴅᴍɪɴ", callback_data="fed_admin_help"),
-            InlineKeyboardButton(text="ғᴇᴅᴏᴡɴᴇʀ", callback_data="fed_owner_help"),
+            InlineKeyboardButton(text="ғᴇᴅᴀᴅᴍɪɴ", callback_data="fed_helpy_admin"),
+            InlineKeyboardButton(text="ғᴇᴅᴏᴡɴᴇʀ", callback_data="fed_helpy_owner"),
         ],
-        [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_user_help")],
+        [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_helpy_user")],
     ]
 
 
