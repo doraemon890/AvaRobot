@@ -2128,10 +2128,6 @@ def fed_help(update: Update, context: CallbackContext):
     bot = context.bot
     help_info = query.data.split("fed_helpy_")[1]
 
-    if query.message is None:
-        print("No message to edit.")
-        return
-
     if help_info == "owner":
         help_text = gs(update.effective_chat.id, "fed_owner_help")
     elif help_info == "admin":
@@ -2139,29 +2135,30 @@ def fed_help(update: Update, context: CallbackContext):
     elif help_info == "user":
         help_text = gs(update.effective_chat.id, "fed_user_help")
     else:
-        help_text = "Unknown help info."
+        help_text = "Help text not found."
 
-    # Log the help_text to check its content
-    print(f"Help text: {help_text}")
-
-    try:
-        query.message.edit_text(
-            text=help_text,
-            parse_mode=ParseMode.MARKDOWN,
-            reply_markup=InlineKeyboardMarkup(
-                [
+    if query.message and query.message.text:
+        try:
+            query.message.edit_text(
+                text=help_text,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(
                     [
-                        InlineKeyboardButton(
-                            text="ʙᴀᴄᴋ",
-                            callback_data=f"help_module({__mod_name__.lower()})",
-                        )
+                        [
+                            InlineKeyboardButton(
+                                text="ʙᴀᴄᴋ",
+                                callback_data=f"help_module({__mod_name__.lower()})",
+                            )
+                        ]
                     ]
-                ]
-            ),
-        )
+                ),
+            )
+            bot.answer_callback_query(query.id)
+        except BadRequest as e:
+            context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
+    else:
+        context.bot.send_message(chat_id=query.from_user.id, text=help_text, parse_mode=ParseMode.MARKDOWN)
         bot.answer_callback_query(query.id)
-    except BadRequest as e:
-        print(f"Failed to edit message: {e}")
 
 def get_help(chat):
     return [
@@ -2172,8 +2169,6 @@ def get_help(chat):
         ],
         [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_helpy_user")],
     ]
-
-
 
 
 NEW_FED_HANDLER = CommandHandler("newfed", new_fed, run_async=True)
