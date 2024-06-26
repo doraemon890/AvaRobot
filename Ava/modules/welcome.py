@@ -1228,17 +1228,16 @@ def __chat_settings__(chat_id, user_id):
 # ғᴏʀ ʜᴇʟᴘ ᴍᴇɴᴜ
 from Ava.modules.language import gs
 
-
 def wlc_m_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "welcome_mutes"),
-        parse_mode=ParseMode.HTML,
+        parse_mode=ParseMode.MARKDOWN,
     )
 
 def wlc_fill_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "welcome_help"),
-        parse_mode=ParseMode.HTML,
+        parse_mode=ParseMode.MARKDOWN,
     )
 
 @Avacallback(pattern=r"wlc_help_")
@@ -1247,38 +1246,35 @@ def fmt_help(update: Update, context: CallbackContext):
     bot = context.bot
     help_info = query.data.split("wlc_help_")[1]
 
-    if query.message is None:
-        print("No message to edit.")
-        return
-
     if help_info == "m":
         help_text = gs(update.effective_chat.id, "welcome_mutes")
     elif help_info == "h":
         help_text = gs(update.effective_chat.id, "welcome_help")
     else:
-        help_text = "Unknown help info."
+        help_text = "Help text not found."
 
-    # Log the help_text to check its content
-    print(f"Help text: {help_text}")
-
-    try:
-        query.message.edit_text(
-            text=help_text,
-            parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
+    if query.message and query.message.text:
+        try:
+            query.message.edit_text(
+                text=help_text,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(
                     [
-                        InlineKeyboardButton(
-                            text="ʙᴀᴄᴋ",
-                            callback_data=f"help_module({__mod_name__.lower()})",
-                        )
+                        [
+                            InlineKeyboardButton(
+                                text="ʙᴀᴄᴋ",
+                                callback_data=f"help_module({__mod_name__.lower()})",
+                            )
+                        ]
                     ]
-                ]
-            ),
-        )
+                ),
+            )
+            bot.answer_callback_query(query.id)
+        except BadRequest as e:
+            context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
+    else:
+        context.bot.send_message(chat_id=query.from_user.id, text=help_text, parse_mode=ParseMode.MARKDOWN)
         bot.answer_callback_query(query.id)
-    except BadRequest as e:
-        print(f"Failed to edit message: {e}")
 
 def get_help(chat):
     return [
