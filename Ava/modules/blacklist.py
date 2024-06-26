@@ -441,12 +441,6 @@ __handlers__ = [
 
 from Ava.modules.language import gs
 
-
-from Ava.modules.language import gs
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
-from telegram.ext import CallbackContext, Update
-from telegram.error import BadRequest
-
 def blacklist_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "blacklist_help"),
