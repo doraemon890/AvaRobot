@@ -2127,27 +2127,38 @@ def fed_help(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
     help_info = query.data.split("fed_helpy_")[1]
+
+    if query.message is None:
+        print("No message to edit.")
+        return
+
     if help_info == "owner":
         help_text = gs(update.effective_chat.id, "fed_owner_help")
     elif help_info == "admin":
         help_text = gs(update.effective_chat.id, "fed_admin_help")
     elif help_info == "user":
         help_text = gs(update.effective_chat.id, "fed_user_help")
-    query.message.edit_text(
-        text=help_text,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(
-            [
+    else:
+        help_text = "Unknown help info."
+
+    try:
+        query.message.edit_text(
+            text=help_text,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton(
-                        text="ʙᴀᴄᴋ",
-                        callback_data=f"help_module({__mod_name__.lower()})",
-                    )
+                    [
+                        InlineKeyboardButton(
+                            text="ʙᴀᴄᴋ",
+                            callback_data=f"help_module({__mod_name__.lower()})",
+                        )
+                    ]
                 ]
-            ]
-        ),
-    )
-    bot.answer_callback_query(query.id)
+            ),
+        )
+        bot.answer_callback_query(query.id)
+    except BadRequest as e:
+        print(f"Failed to edit message: {e}")
 
 def get_help(chat):
     return [
@@ -2158,6 +2169,7 @@ def get_help(chat):
         ],
         [InlineKeyboardButton(text="ᴜsᴇʀs", callback_data="fed_helpy_user")],
     ]
+
 
 
 NEW_FED_HANDLER = CommandHandler("newfed", new_fed, run_async=True)
