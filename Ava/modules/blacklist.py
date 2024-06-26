@@ -442,6 +442,11 @@ __handlers__ = [
 from Ava.modules.language import gs
 
 
+from Ava.modules.language import gs
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
+from telegram.ext import CallbackContext, Update
+from telegram.error import BadRequest
+
 def blacklist_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         gs(update.effective_chat.id, "blacklist_help"),
@@ -467,7 +472,7 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
     else:
         help_text = "Help text not found."
 
-    if query.message:
+    if query.message and query.message.text:
         try:
             query.message.edit_text(
                 text=help_text,
@@ -485,12 +490,10 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
             )
             bot.answer_callback_query(query.id)
         except BadRequest as e:
-            # Log the error and message details for debugging
-            print(f"Failed to edit message: {str(e)}")
-            print(f"Message content: {query.message.text}")
             context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
     else:
-        context.bot.send_message(chat_id=query.from_user.id, text="No message to edit.")
+        context.bot.send_message(chat_id=query.from_user.id, text=help_text, parse_mode=ParseMode.MARKDOWN)
+        bot.answer_callback_query(query.id)
 
 __mod_name__ = "𝐁-ʟɪsᴛ️"
 
