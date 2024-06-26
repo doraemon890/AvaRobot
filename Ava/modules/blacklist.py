@@ -438,7 +438,9 @@ __handlers__ = [
     (BLACKLIST_DEL_HANDLER, BLACKLIST_GROUP),
 ]
 
+
 from Ava.modules.language import gs
+
 
 def blacklist_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
@@ -457,25 +459,33 @@ def blacklist_help_bse(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
     help_info = query.data.split("asusau_help_")[1]
+    
     if help_info == "wblack":
         help_text = gs(update.effective_chat.id, "blacklist_help")
     elif help_info == "sblack":
         help_text = gs(update.effective_chat.id, "sticker_blacklist_help")
-    query.message.edit_text(
-        text=help_text,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="ʙᴀᴄᴋ",
-                        callback_data=f"help_module({__mod_name__.lower()})",
-                    )
-                ]
-            ]
-        ),
-    )
-    bot.answer_callback_query(query.id)
+    
+    if query.message:
+        try:
+            query.message.edit_text(
+                text=help_text,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="ʙᴀᴄᴋ",
+                                callback_data=f"help_module({__mod_name__.lower()})",
+                            )
+                        ]
+                    ]
+                ),
+            )
+            bot.answer_callback_query(query.id)
+        except BadRequest as e:
+            context.bot.send_message(chat_id=query.message.chat_id, text="Failed to edit message: " + str(e))
+    else:
+        context.bot.send_message(chat_id=query.from_user.id, text="No message to edit.")
 
 __mod_name__ = "𝐁-ʟɪsᴛ️"
 
