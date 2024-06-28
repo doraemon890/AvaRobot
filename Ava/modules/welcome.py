@@ -19,7 +19,7 @@ from telegram.utils.helpers import escape_markdown, mention_html, mention_markdo
 
 import Ava.modules.sql.log_channel_sql as logsql
 import Ava.modules.sql.welcome_sql as sql
-from Ava import DEMONS, DEV_USERS, DRAGONS, LOGGER, OWNER_ID
+from Ava import DEMONS, DEV_USERS, DRAGONS, LOGGER, OWNER_ID, EVENT_LOGS
 from Ava import SUPPORT_CHAT as Dora_Hub
 from Ava import WOLVES, dispatcher, sw
 from Ava.modules.helper_funcs.anonymous import AdminPerms, user_admin
@@ -230,10 +230,25 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                 )
                 continue
 
+            # Welcome yourself
             elif new_mem.id == bot.id:
+                if not Ava.ALLOW_CHATS:
+                    with suppress(BadRequest):
+                        update.effective_message.reply_text(
+                            f"ɢʀᴏᴜᴘ ᴀʀᴇ ᴅɪsᴀʙʟᴇᴅ ғᴏʀ {bot.first_name}, ɪ'ᴍ ʙᴜsʏ."
+                        )
+                    bot.leave_chat(update.effective_chat.id)
+                    return
+                bot.send_message(
+                    EVENT_LOGS,
+                    "#ɴᴇᴡ_ɢʀᴏᴜᴘ\n<b>ɢʀᴏᴜᴘ ɴᴀᴍᴇ :</b> {}\n<b>ᴄʜᴀᴛ ɪᴅ:</b> <code>{}</code> ".format(
+                        html.escape(chat.title),
+                        chat.id,
+                    ),
+                    parse_mode=ParseMode.HTML,
+                )
                 update.effective_message.reply_text(
-                    f"ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ! ᴊᴏɪɴ @{Dora_Hub} ꜰᴏʀ ꜱᴜᴘᴘᴏʀᴛ.",
-                    reply_to_message_id=reply,
+                    "ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ!", reply_to_message_id=reply
                 )
                 continue
 
