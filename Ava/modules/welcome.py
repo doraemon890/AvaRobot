@@ -232,13 +232,6 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
 
             # Welcome yourself
             elif new_mem.id == bot.id:
-                if not Ava.ALLOW_CHATS:
-                    with suppress(BadRequest):
-                        update.effective_message.reply_text(
-                            f"ɢʀᴏᴜᴘ ᴀʀᴇ ᴅɪsᴀʙʟᴇᴅ ғᴏʀ {bot.first_name}, ɪ'ᴍ ʙᴜsʏ."
-                        )
-                    bot.leave_chat(update.effective_chat.id)
-                    return
                 bot.send_message(
                     EVENT_LOGS,
                     "#ɴᴇᴡ_ɢʀᴏᴜᴘ\n<b>ɢʀᴏᴜᴘ ɴᴀᴍᴇ :</b> {}\n<b>ᴄʜᴀᴛ ɪᴅ:</b> <code>{}</code> ".format(
@@ -247,8 +240,9 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                     ),
                     parse_mode=ParseMode.HTML,
                 )
+                # Send a welcome message to the chat
                 update.effective_message.reply_text(
-                    "ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ!", reply_to_message_id=reply
+                 "ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ!", reply_to_message_id=reply.message_id
                 )
                 continue
 
