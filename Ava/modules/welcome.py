@@ -242,7 +242,8 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                 )
                 # Send a welcome message to the chat
                 update.effective_message.reply_text(
-                 "ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ!", reply_to_message_id=reply.message_id
+                    f"ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ! ᴊᴏɪɴ @{Dora_Hub} ꜰᴏʀ ꜱᴜᴘᴘᴏʀᴛ.",
+                    reply_to_message_id=reply,
                 )
                 continue
 
