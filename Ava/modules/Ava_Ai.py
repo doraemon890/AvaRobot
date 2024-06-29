@@ -19,7 +19,6 @@ from MukeshAPI import api
 from lexica.constants import languageModels
 from httpx import AsyncClient
 
-DEEP_API = "JARVIS"
 # Ava as an Ai Assistant
 @app.on_message(filters.command(["va"], prefixes=["A"]))
 async def chat_gpt(bot, message):
@@ -53,7 +52,7 @@ async def upscale_image(client, message):
     chat_id = message.chat.id
     replied_message = message.reply_to_message
     
-    if not JARVIS:
+    if not DEEP_API:
         return await message.reply_text("I can't upscale without a DEEP API key!")
     
     if not replied_message or not replied_message.photo:
@@ -65,7 +64,7 @@ async def upscale_image(client, message):
     response = requests.post(
         "https://api.deepai.org/api/torch-srgan",
         files={'image': open(image_path, 'rb')},
-        headers={'api-key': JARVIS}
+        headers={'api-key': DEEP_API}
     ).json()
     
     image_url = response.get("output_url")
@@ -85,7 +84,7 @@ async def draw_image(client, message):
     user_id = message.sender_chat.id if message.sender_chat else message.from_user.id
     replied_message = message.reply_to_message
     
-    if not JARVIS:
+    if not DEEP_API:
         return await message.reply_text("I can't generate images without a DEEP API key!")
     
     if replied_message and replied_message.text:
@@ -101,7 +100,7 @@ async def draw_image(client, message):
     response = requests.post(
         "https://api.deepai.org/api/text2img",
         data={'text': query, 'grid_size': '1', 'image_generator_version': 'hd'},
-        headers={'api-key': JARVIS}
+        headers={'api-key': DEEP_API}
     ).json()
     
     image_url = response.get("output_url")
@@ -114,108 +113,6 @@ async def draw_image(client, message):
     
     await aux_message.delete()
     await message.reply_photo(photo=downloaded_image, caption=query)
-
-# Reverse image functionality
-ENDPOINT = "https://sasta-api.vercel.app/googleImageSearch"
-httpx_client = httpx.AsyncClient(timeout=60)
-
-COMMANDS = [
-    "reverse",
-    "grs",
-    "gis",
-    "pp"
-]
-
-class STRINGS:
-    REPLY_TO_MEDIA = "ℹ️ Please reply to a message that contains one of the supported media types, such as a photo, sticker, or image file."
-    UNSUPPORTED_MEDIA_TYPE = "<b>Unsupported media type!</b>\nℹ️ Please reply with a supported media type: image, sticker, or image file."
-    
-    REQUESTING_API_SERVER = "`Requesting to <b>API Server</b>...`"
-    
-    DOWNLOADING_MEDIA = "`Downloading media...`"
-    UPLOADING_TO_API_SERVER = "`Uploading media to <b>API Server</b>... `"
-    PARSING_RESULT = "`Parsing result...`"
-    
-    EXCEPTION_OCCURRED = "❌ <b>Exception occurred!</b>\n\n<b>Exception:</b> {}"
-    
-    RESULT = """
-   <b>Query:</b> {query}
-   <b>Page Link:</b> <a href="{search_url}">Link</a>
-
-   <b>Time Taken:</b> <code>{time_taken}</code> ms.
-    """
-    OPEN_SEARCH_PAGE = "Open"
-
-@app.on_message(filters.command(COMMANDS))
-async def on_google_lens_search(client: Client, message: Message) -> None:
-    if len(message.command) > 1:
-        image_url = message.command[1]
-        params = {
-            "image_url": image_url
-        }
-        status_msg = await message.reply(STRINGS.REQUESTING_API_SERVER)
-        start_time = asyncio.get_event_loop().time()
-        response = await httpx_client.get(ENDPOINT, params=params)
-        
-    elif (reply := message.reply_to_message):
-        if reply.media not in (MessageMediaType.PHOTO, MessageMediaType.STICKER, MessageMediaType.DOCUMENT):
-            await message.reply(STRINGS.UNSUPPORTED_MEDIA_TYPE)
-            return
-        
-        status_msg = await message.reply(STRINGS.DOWNLOADING_MEDIA)
-        file_path = f"temp/{uuid.uuid4()}"
-        try:
-            await reply.download(file_path)
-        except Exception as exc:
-            text = STRINGS.EXCEPTION_OCCURRED.format(exc)
-            await message.reply(text)
-            
-            try:
-                os.remove(file_path)
-            except FileNotFoundError:
-                pass
-            return
-        
-        with open(file_path, "rb") as image_file:
-            start_time = asyncio.get_event_loop().time()
-            files = {"file": image_file}
-            await status_msg.edit(STRINGS.UPLOADING_TO_API_SERVER)
-            response = await httpx_client.post(ENDPOINT, files=files)
-        
-        try:
-            os.remove(file_path)
-        except FileNotFoundError:
-            pass
-    
-    if response.status_code == 404:
-        text = STRINGS.EXCEPTION_OCCURRED.format(response.json()["error"])
-        await message.reply(text)
-        await status_msg.delete()
-        return
-    elif response.status_code != 200:
-        text = STRINGS.EXCEPTION_OCCURRED.format(response.text)
-        await message.reply(text)
-        await status_msg.delete()
-        return
-    
-    await status_msg.edit(STRINGS.PARSING_RESULT)
-    response_json = response.json()
-    query = response_json["query"]
-    search_url = response_json["search_url"]
-    
-    end_time = asyncio.get_event_loop().time() - start_time
-    time_taken = "{:.2f}".format(end_time)
-    
-    text = STRINGS.RESULT.format(
-        query=f"<code>{query}</code>" if query else "<i>Name not found</i>",
-        search_url=search_url,
-        time_taken=time_taken
-    )
-    buttons = [
-        [InlineKeyboardButton(STRINGS.OPEN_SEARCH_PAGE, url=search_url)]
-    ]
-    await message.reply(text, disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(buttons))
-    await status_msg.delete()
 
 # Image searching
 @app.on_message(filters.command(["img", "image"], prefixes=["/", "!"]))
@@ -240,17 +137,17 @@ async def google_img_search(client: Client, message: Message):
         downloader.download(query, limit=lim, output_dir=download_dir, adult_filter_off=True, force_replace=False, timeout=60)
         images_dir = os.path.join(download_dir, query)
         if not os.listdir(images_dir):
-            raise Exception("`No images were downloaded.`")
+            raise Exception("No images were downloaded.")
         lst = [os.path.join(images_dir, img) for img in os.listdir(images_dir)][:lim]  # Ensure we only take the number of images specified by lim
     except Exception as e:
         return await message.reply(f"Error in downloading images: {e}")
 
-    msg = await message.reply("`Ava Scrapping images...`")
+    msg = await message.reply("`Ava Scraping images...`")
 
     count = 0
     for img in lst:
         count += 1
-        await msg.edit(f"`=> Ava owo scrapped images {count}`")
+        await msg.edit(f"`Ava Scrapped images {count}`")
 
     try:
         await app.send_media_group(
@@ -263,106 +160,3 @@ async def google_img_search(client: Client, message: Message):
     except Exception as e:
         await msg.delete()
         return await message.reply(f"Error in sending images: {e}")
-
-# Some AI
-async def chat_completion(prompt, model) -> tuple | str:
-    try:
-        model_info = getattr(languageModels, model)
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.example.com/chat-completion",  # Use the actual API endpoint
-                json={"prompt": prompt, "model": model_info}
-            )
-        response_data = response.json()
-        if model == "bard":
-            return response_data['content'], response_data['images']
-        return response_data['content']
-    except Exception as e:
-        raise Exception(f"API error: {e}")
-
-async def gemini_vision(prompt, model, images) -> str:
-    image_info = []
-    for image in images:
-        with open(image, "rb") as image_file:
-            data = base64.b64encode(image_file.read()).decode("utf-8")
-            mime_type, _ = mimetypes.guess_type(image)
-            image_info.append({
-                "data": data,
-                "mime_type": mime_type
-            })
-        os.remove(image)
-    payload = {
-        "images": image_info,
-        "prompt": prompt
-    }
-    model_info = getattr(languageModels, model)
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "https://api.example.com/gemini-vision",  # Use the actual API endpoint
-            json={"prompt": prompt, "model": model_info, "images": image_info}
-        )
-    response_data = response.json()
-    return response_data['content']['parts'][0]['text']
-
-def get_media(message):
-    """Extract Media"""
-    media = None
-    if message.media:
-        if message.photo:
-            media = message.photo
-        elif message.document and message.document.mime_type in ['image/png', 'image/jpg', 'image/jpeg'] \
-                and message.document.file_size < 5242880:
-            media = message.document
-    elif message.reply_to_message and message.reply_to_message.media:
-        if message.reply_to_message.photo:
-            media = message.reply_to_message.photo
-        elif message.reply_to_message.document and message.reply_to_message.document.mime_type in ['image/png',
-                                                                                                  'image/jpg',
-                                                                                                  'image/jpeg'] \
-                and message.reply_to_message.document.file_size < 5242880:
-            media = message.reply_to_message.document
-    return media
-
-def get_text(message):
-    """Extract Text From Commands"""
-    if message.text is None:
-        return None
-    if " " in message.text:
-        try:
-            return message.text.split(None, 1)[1]
-        except IndexError:
-            return None
-    else:
-        return None
-
-@app.on_message(filters.command(["bard", "gpt", "llama", "mistral", "palm", "gemini"]))
-async def chat_bots(client, message: Message):
-    prompt = get_text(message)
-    media = get_media(message)
-    if media is not None:
-        return await ask_about_image(client, message, [media], prompt)
-    if prompt is None:
-        return await message.reply_text("Hello, how can I assist you today?")
-    model = message.command[0].lower()
-    output = await chat_completion(prompt, model)
-    if model == "bard":
-        output, images = output
-        if len(images) == 0:
-            return await message.reply_text(output)
-        media = [InputMediaPhoto(i) for i in images]
-        media[0] = InputMediaPhoto(images[0], caption=output)
-        await client.send_media_group(
-            message.chat.id,
-            media,
-            reply_to_message_id=message.message_id
-        )
-    else:
-        await message.reply_text(output['parts'][0]['text'] if model == "gemini" else output)
-
-async def ask_about_image(client, message: Message, media_files: list, prompt: str):
-    images = []
-    for media in media_files:
-        image = await client.download_media(media.file_id, file_name=f'./downloads/{message.from_user.id}_ask.jpg')
-        images.append(image)
-    output = await gemini_vision(prompt if prompt else "What's this?", "geminiVision", images)
-    await message.reply_text(output)
