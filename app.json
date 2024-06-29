@@ -70,6 +70,11 @@
       "description": "Get bot token from @BotFather on TG",
       "required": true,
       "value": ""
+    },
+    "DEEP_API": {
+      "description": "Your DEEP API key from https://deepai.org/",
+      "value": "",
+      "required": false
     }
   }
 }
