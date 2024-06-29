@@ -268,15 +268,19 @@ async def google_img_search(client: Client, message: Message):
 async def chat_completion(prompt, model) -> tuple | str:
     try:
         model_info = getattr(languageModels, model)
-        client = AsyncClient()
-        output = await client.ChatCompletion(prompt, model_info)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.example.com/chat-completion",  # Use the actual API endpoint
+                json={"prompt": prompt, "model": model_info}
+            )
+        response_data = response.json()
         if model == "bard":
-            return output['content'], output['images']
-        return output['content']
+            return response_data['content'], response_data['images']
+        return response_data['content']
     except Exception as e:
         raise Exception(f"API error: {e}")
 
-async def gemini_vision(prompt, model, images) -> tuple | str:
+async def gemini_vision(prompt, model, images) -> str:
     image_info = []
     for image in images:
         with open(image, "rb") as image_file:
@@ -288,12 +292,17 @@ async def gemini_vision(prompt, model, images) -> tuple | str:
             })
         os.remove(image)
     payload = {
-        "images": image_info
+        "images": image_info,
+        "prompt": prompt
     }
     model_info = getattr(languageModels, model)
-    client = AsyncClient()
-    output = await client.ChatCompletion(prompt, model_info, json=payload)
-    return output['content']['parts'][0]['text']
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://api.example.com/gemini-vision",  # Use the actual API endpoint
+            json={"prompt": prompt, "model": model_info, "images": image_info}
+        )
+    response_data = response.json()
+    return response_data['content']['parts'][0]['text']
 
 def get_media(message):
     """Extract Media"""
@@ -327,33 +336,33 @@ def get_text(message):
         return None
 
 @app.on_message(filters.command(["bard", "gpt", "llama", "mistral", "palm", "gemini"]))
-async def chat_bots(_, m: Message):
-    prompt = get_text(m)
-    media = get_media(m)
+async def chat_bots(client, message: Message):
+    prompt = get_text(message)
+    media = get_media(message)
     if media is not None:
-        return await ask_about_image(_, m, [media], prompt)
+        return await ask_about_image(client, message, [media], prompt)
     if prompt is None:
-        return await m.reply_text("Hello, how can I assist you today?")
-    model = m.command[0].lower()
+        return await message.reply_text("Hello, how can I assist you today?")
+    model = message.command[0].lower()
     output = await chat_completion(prompt, model)
     if model == "bard":
         output, images = output
         if len(images) == 0:
-            return await m.reply_text(output)
+            return await message.reply_text(output)
         media = [InputMediaPhoto(i) for i in images]
         media[0] = InputMediaPhoto(images[0], caption=output)
-        await _.send_media_group(
-            m.chat.id,
+        await client.send_media_group(
+            message.chat.id,
             media,
-            reply_to_message_id=m.message_id
+            reply_to_message_id=message.message_id
         )
     else:
-        await m.reply_text(output['parts'][0]['text'] if model == "gemini" else output)
+        await message.reply_text(output['parts'][0]['text'] if model == "gemini" else output)
 
-async def ask_about_image(_, m: Message, media_files: list, prompt: str):
+async def ask_about_image(client, message: Message, media_files: list, prompt: str):
     images = []
     for media in media_files:
-        image = await _.download_media(media.file_id, file_name=f'./downloads/{m.from_user.id}_ask.jpg')
+        image = await client.download_media(media.file_id, file_name=f'./downloads/{message.from_user.id}_ask.jpg')
         images.append(image)
     output = await gemini_vision(prompt if prompt else "What's this?", "geminiVision", images)
-    await m.reply_text(output)
+    await message.reply_text(output)
