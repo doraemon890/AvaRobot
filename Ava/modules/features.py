@@ -37,26 +37,6 @@ async def mongo_command(client, message: Message):
         await message.reply("Invalid MongoDB URL format 💔")
 
 
-# Handwriting Feature
-@app.on_message(filters.command("write"))
-async def handwrite(_, message: Message):
-    if message.reply_to_message:
-        text = message.reply_to_message.text
-    else:
-        text = message.text.split(None, 1)[1]
-
-    m = await message.reply_text("`Please wait...,\n\nWriting your text...`")
-    
-    write_url = f"https://apis.xditya.me/write?text={text}"
-    caption = f"""
-Successfully written text 💘
-✨ **Written by :** [{BOT_NAME}](https://t.me/{BOT_USERNAME})
-🥀 **Requested by :** {message.from_user.mention}
-"""
-    await m.delete()
-    await message.reply_photo(photo=write_url, caption=caption)
-
-
 # Remove Background Feature
 API_KEY = "23nfCEipDijgVv6SH14oktJe"
 
