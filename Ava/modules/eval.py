@@ -11,7 +11,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from Ava import Jarvis as app
-from config import OWNER_ID
+from Ava import OWNER_ID
 
 
 async def aexec(code, client, message):
