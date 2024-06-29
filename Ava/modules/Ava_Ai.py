@@ -14,11 +14,12 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedi
 from bing_image_downloader import downloader
 import httpx
 import config
-from Ava import Jarvis as app
+from Ava import DEEP_API, Jarvis as app
 from MukeshAPI import api
 from lexica.constants import languageModels
 from httpx import AsyncClient
 
+DEEP_API = "JARVIS"
 # Ava as an Ai Assistant
 @app.on_message(filters.command(["va"], prefixes=["A"]))
 async def chat_gpt(bot, message):
@@ -52,7 +53,7 @@ async def upscale_image(client, message):
     chat_id = message.chat.id
     replied_message = message.reply_to_message
     
-    if not config.DEEP_API:
+    if not JARVIS:
         return await message.reply_text("I can't upscale without a DEEP API key!")
     
     if not replied_message or not replied_message.photo:
@@ -64,7 +65,7 @@ async def upscale_image(client, message):
     response = requests.post(
         "https://api.deepai.org/api/torch-srgan",
         files={'image': open(image_path, 'rb')},
-        headers={'api-key': config.DEEP_API}
+        headers={'api-key': JARVIS}
     ).json()
     
     image_url = response.get("output_url")
@@ -84,7 +85,7 @@ async def draw_image(client, message):
     user_id = message.sender_chat.id if message.sender_chat else message.from_user.id
     replied_message = message.reply_to_message
     
-    if not config.DEEP_API:
+    if not JARVIS:
         return await message.reply_text("I can't generate images without a DEEP API key!")
     
     if replied_message and replied_message.text:
@@ -100,7 +101,7 @@ async def draw_image(client, message):
     response = requests.post(
         "https://api.deepai.org/api/text2img",
         data={'text': query, 'grid_size': '1', 'image_generator_version': 'hd'},
-        headers={'api-key': config.DEEP_API}
+        headers={'api-key': JARVIS}
     ).json()
     
     image_url = response.get("output_url")
