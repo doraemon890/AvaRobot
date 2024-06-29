@@ -159,6 +159,19 @@ disable_help: |
     •➥ /listcmds*:* Tüm olası açma/kapama komutlarını listeler.
 
 
+equip_help: |
+   •➥ Ava *:* Ava'ya soru sormak için.
+   •➥ /upscale *:* Bir görüntüyü büyütmek için.
+   •➥ /getdraw *:* Bir görüntü oluşturmak için.
+   •➥ /img *:* Bir görüntü aramak için.
+   •➥ /mongochk *:* Bir MongoDB URL'sini kontrol etmek için.
+   •➥ /domain *:* Bir alan adını kontrol etmek için.
+   •➥ /ip *:* Bir IP adresini kontrol etmek için.
+   •➥ /rmbg *:* Bir görüntünün arka planını kaldırmak için.
+   •➥ /pypi *:* Bir PyPI sürümünü kontrol etmek için.
+   •➥ /gps *:* GPS koordinatlarını almak için. Örnek: /gps [enlem, boylam]
+
+
 fsub_help: |
     *Zorunlu Abonelik:*
 
@@ -427,7 +440,9 @@ sticker_help: |
     •➥ /delsticker *:* Paketinizdeki çıkartmayı silmek için çıkartmaya yanıt verin.
     •➥ /stickers *:* Belirtilen terim için Combots sticker kataloğunda çıkartmaları bulur.
     •➥ /mmf <yanıtla ve metin yaz>: Bir çıkartma için metin çizer.
-
+    •➥ /tiny *:* Bir çıkartmayı küçük bir çıkartmaya dönüştürmek.
+    •➥ /getvidsticker *:* Bir video çıkartması almak.
+    •➥ /getvideo *:* Bir GIF videosu almak.
 
 sticker_blacklist_help: |
     Kara liste çıkartma, belirli çıkartmaları engellemek için kullanılır. Bir çıkartma gönderildiğinde, mesaj hemen silinir.
