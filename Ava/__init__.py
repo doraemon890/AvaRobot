@@ -75,6 +75,7 @@ WOLVES = get_user_list("elevated_users.json", "whitelists")  # DON'T EDIT
 TIGERS = get_user_list("elevated_users.json", "tigers")  # DON'T EDIT
 API_ID = Config.API_ID
 API_HASH = Config.API_HASH
+DEEP_API = Config.DEEP_API
 BAN_STICKER = "CAADBQAD3AcAAor_2VaLJ7V3SdP8dgI"
 REDIS_URL = Config.REDIS_URL
 SUPPORT_CHAT = Config.SUPPORT_CHAT

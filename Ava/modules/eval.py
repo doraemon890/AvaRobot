@@ -1,55 +1,18 @@
-import ast
-import io
 import os
+import re
+import subprocess
 import sys
-import textwrap
 import traceback
-from contextlib import redirect_stdout
 from inspect import getfullargspec
 from io import StringIO
 from time import time
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from telegram import ParseMode, Update
-from telegram.ext import CallbackContext, CommandHandler
 
-from Ava import DEV_USERS, LOGGER
 from Ava import Jarvis as app
-from Ava import dispatcher
-from Ava.modules.helper_funcs.chat_status import dev_plus
+from config import OWNER_ID
 
-namespaces = {}
-
-def namespace_of(chat_id, update, bot):
-    if chat_id not in namespaces:
-        namespaces[chat_id] = {
-            "__builtins__": globals()["__builtins__"],
-            "bot": bot,
-            "effective_message": update.effective_message,
-            "effective_user": update.effective_user,
-            "effective_chat": update.effective_chat,
-            "update": update,
-        }
-    return namespaces[chat_id]
-
-def log_input(update):
-    user_id = update.effective_user.id
-    chat_id = update.effective_chat.id
-    LOGGER.info(f"IN: {update.effective_message.text} (user={user_id}, chat={chat_id})")
-
-def send_message(msg, bot, update):
-    if len(str(msg)) > 2000:
-        with io.BytesIO(str.encode(msg)) as out_file:
-            out_file.name = "output.txt"
-            bot.send_document(chat_id=update.effective_chat.id, document=out_file)
-    else:
-        LOGGER.info(f"OUT: '{msg}'")
-        bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=f"<b>Result</b>:\n<code>{msg}</code>",
-            parse_mode=ParseMode.HTML,
-        )
 
 async def aexec(code, client, message):
     exec(
@@ -58,66 +21,28 @@ async def aexec(code, client, message):
     )
     return await locals()["__aexec"](client, message)
 
+
 async def edit_or_reply(msg: Message, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
-@dev_plus
-def execute(update: Update, context: CallbackContext):
-    bot = context.bot
-    result = do_exec(bot, update)
-    send_message(result, bot, update)
 
-def cleanup_code(code):
-    if code.startswith("```") and code.endswith("```"):
-        return "\n".join(code.split("\n")[1:-1])
-    return code.strip("` \n")
-
-def do_exec(bot, update):
-    log_input(update)
-    content = update.message.text.split(" ", 1)[-1]
-    body = cleanup_code(content)
-    env = namespace_of(update.message.chat_id, update, bot)
-    os.chdir(os.getcwd())
-    with open(os.path.join(os.getcwd(), "Ava/modules/helper_funcs/temp.txt"), "w") as temp:
-        temp.write(body)
-    stdout = io.StringIO()
-    to_compile = f'def func():\n{textwrap.indent(body, "  ")}'
-    try:
-        exec(to_compile, env)
-    except Exception as e:
-        return f"Error: {e.__class__.__name__}: {e}"
-    func = env["func"]
-    try:
-        with redirect_stdout(stdout):
-            func_return = func()
-    except Exception:
-        value = stdout.getvalue()
-        return f"Error: {value}{traceback.format_exc()}"
-    else:
-        value = stdout.getvalue()
-        result = None
-        if func_return is None:
-            if value:
-                result = f"{value}"
-            else:
-                try:
-                    result = f"{repr(ast.literal_eval(body, env))}"
-                except Exception:
-                    result = "Success"
-        else:
-            result = f"{value}{func_return}"
-        if result:
-            return result
-
-@app.on_message(
-    filters.user(DEV_USERS)
+@app.on_edited_message(
+    filters.command("eval")
+    & filters.user(OWNER_ID)
     & ~filters.forwarded
     & ~filters.via_bot
-    & filters.command(["eval", "e"])
 )
-async def executor(client, message):
+@app.on_message(
+    filters.command("eval")
+    & filters.user(OWNER_ID)
+    & ~filters.forwarded
+    & ~filters.via_bot
+)
+async def executor(client: app, message: Message):
+    if len(message.command) < 2:
+        return await edit_or_reply(message, text="<b>ᴡʜᴀᴛ ʏᴏᴜ ᴡᴀɴɴᴀ ᴇxᴇᴄᴜᴛᴇ ʙᴀʙʏ ?</b>")
     try:
         cmd = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
@@ -136,20 +61,20 @@ async def executor(client, message):
     stderr = redirected_error.getvalue()
     sys.stdout = old_stdout
     sys.stderr = old_stderr
-    evaluation = ""
+    evaluation = "\n"
     if exc:
-        evaluation = f"Error: {exc}"
+        evaluation += exc
     elif stderr:
-        evaluation = f"Error: {stderr}"
+        evaluation += stderr
     elif stdout:
-        evaluation = stdout
+        evaluation += stdout
     else:
-        evaluation = "Success"
-    final_output = f"**OUTPUT**:\n```{evaluation.strip()}```"
+        evaluation += "Success"
+    final_output = f"<b>⥤ ʀᴇsᴜʟᴛ :</b>\n<pre language='python'>{evaluation}</pre>"
     if len(final_output) > 4096:
         filename = "output.txt"
         with open(filename, "w+", encoding="utf8") as out_file:
-            out_file.write(str(evaluation.strip()))
+            out_file.write(str(evaluation))
         t2 = time()
         keyboard = InlineKeyboardMarkup(
             [
@@ -163,7 +88,7 @@ async def executor(client, message):
         )
         await message.reply_document(
             document=filename,
-            caption=f"**INPUT:**\n`{cmd[:980]}`\n\n**OUTPUT:**\n`Attached Document`",
+            caption=f"<b>⥤ ᴇᴠᴀʟ :</b>\n<code>{cmd[0:980]}</code>\n\n<b>⥤ ʀᴇsᴜʟᴛ :</b>\nAttached Document",
             quote=False,
             reply_markup=keyboard,
         )
@@ -177,30 +102,110 @@ async def executor(client, message):
                     InlineKeyboardButton(
                         text="⏳",
                         callback_data=f"runtime {round(t2-t1, 3)} Seconds",
-                    )
+                    ),
+                    InlineKeyboardButton(
+                        text="🗑",
+                        callback_data=f"forceclose abc|{message.from_user.id}",
+                    ),
                 ]
             ]
         )
         await edit_or_reply(message, text=final_output, reply_markup=keyboard)
+
 
 @app.on_callback_query(filters.regex(r"runtime"))
 async def runtime_func_cq(_, cq):
     runtime = cq.data.split(None, 1)[1]
     await cq.answer(runtime, show_alert=True)
 
-@dev_plus
-def clear(update: Update, context: CallbackContext):
-    bot = context.bot
-    log_input(update)
-    if update.message.chat_id in namespaces:
-        del namespaces[update.message.chat_id]
-    send_message("Cleared locals.", bot, update)
 
-EXEC_HANDLER = CommandHandler(
-    ("x", "ex", "exe", "py"),
-    execute,
+@app.on_callback_query(filters.regex("forceclose"))
+async def forceclose_command(_, CallbackQuery):
+    callback_data = CallbackQuery.data.strip()
+    callback_request = callback_data.split(None, 1)[1]
+    query, user_id = callback_request.split("|")
+    if CallbackQuery.from_user.id != int(user_id):
+        try:
+            return await CallbackQuery.answer(
+                "» ɪᴛ'ʟʟ ʙᴇ ʙᴇᴛᴛᴇʀ ɪғ ʏᴏᴜ sᴛᴀʏ ɪɴ ʏᴏᴜʀ ʟɪᴍɪᴛs ʙᴀʙʏ.", show_alert=True
+            )
+        except:
+            return
+    await CallbackQuery.message.delete()
+    try:
+        await CallbackQuery.answer()
+    except:
+        return
+
+
+@app.on_edited_message(
+    filters.command("sh")
+    & filters.user(OWNER_ID)
+    & ~filters.forwarded
+    & ~filters.via_bot
 )
-CLEAR_HANDLER = CommandHandler("clearlocals", clear)
-
-dispatcher.add_handler(EXEC_HANDLER)
-dispatcher.add_handler(CLEAR_HANDLER)
+@app.on_message(
+    filters.command("sh")
+    & filters.user(OWNER_ID)
+    & ~filters.forwarded
+    & ~filters.via_bot
+)
+async def shellrunner(_, message: Message):
+    if len(message.command) < 2:
+        return await edit_or_reply(message, text="<b>ᴇxᴀᴍᴩʟᴇ :</b>\n/sh git pull")
+    text = message.text.split(None, 1)[1]
+    if "\n" in text:
+        code = text.split("\n")
+        output = ""
+        for x in code:
+            shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", x)
+            try:
+                process = subprocess.Popen(
+                    shell,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+            except Exception as err:
+                await edit_or_reply(message, text=f"<b>ERROR :</b>\n<pre>{err}</pre>")
+            output += f"<b>{code}</b>\n"
+            output += process.stdout.read()[:-1].decode("utf-8")
+            output += "\n"
+    else:
+        shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", text)
+        for a in range(len(shell)):
+            shell[a] = shell[a].replace('"', "")
+        try:
+            process = subprocess.Popen(
+                shell,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except Exception as err:
+            print(err)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            errors = traceback.format_exception(
+                etype=exc_type,
+                value=exc_obj,
+                tb=exc_tb,
+            )
+            return await edit_or_reply(
+                message, text=f"<b>ERROR :</b>\n<pre>{''.join(errors)}</pre>"
+            )
+        output = process.stdout.read()[:-1].decode("utf-8")
+    if str(output) == "\n":
+        output = None
+    if output:
+        if len(output) > 4096:
+            with open("output.txt", "w+") as file:
+                file.write(output)
+            await app.send_document(
+                message.chat.id,
+                "output.txt",
+                reply_to_message_id=message.id,
+                caption="<code>Output</code>",
+            )
+            return os.remove("output.txt")
+        await edit_or_reply(message, text=f"<b>OUTPUT :</b>\n<pre>{output}</pre>")
+    else:
+        await edit_or_reply(message, text="<b>OUTPUT :</b>\n<code>None</code>")
+    await message.stop_propagation()

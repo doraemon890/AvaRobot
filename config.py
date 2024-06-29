@@ -10,6 +10,7 @@ class Config(object):
 
     API_ID = int(getenv("API_ID", 6))
     API_HASH = getenv("API_HASH", None)
+    DEEP_API = getenv("DEEP_API")
     ARQ_API_KEY = "TBPYLF-SIOYFX-JALTSV-QEAMXE-ARQ"
     SPAMWATCH_API = "t9HHtrsmy7faPQWloX8xCvdZK~puDP2RnHLpb~qijQqDj94mhcMQdDP_xO0a_Iwe"
     TOKEN = getenv("TOKEN")
