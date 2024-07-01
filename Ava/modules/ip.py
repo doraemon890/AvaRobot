@@ -5,7 +5,7 @@ import os
 from Ava import Jarvis as app
 
 # IP Checker Feature
-IPINFO_TOKEN = '434e1cea389a93'
+IPINFO_TOKEN = 'de9e66ca96b47e'
 IPQUALITYSCORE_API_KEY = '952ztTq41AxoXam43pStVjVNcEjo1ntQ'
 
 @app.on_message(filters.command(["ip"]))
